@@ -1,9 +1,7 @@
 'use client';
 
 import { useAppContext } from '@/context/AppContext';
-import { useEffect } from 'react';
-
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -21,16 +19,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-
-interface Faculty {
-  id: number;
-  name_en: string;
-}
+import { Faculty } from '@/interfaces/AppInterfaces';
 
 export default function SelectFaculty() {
-  const [open, setOpen] = React.useState(false);
-  const [selectedFaculty, setSelectedFaculty] = React.useState(-1);
-  const { faculties, loading, fetchFaculties } = useAppContext();
+  const [open, setOpen] = useState(false);
+  const {
+    faculties,
+    loading,
+    fetchFaculties,
+    selectedFaculty,
+    setSelectedFaculty,
+  } = useAppContext();
 
   useEffect(() => {
     fetchFaculties();
@@ -43,24 +42,24 @@ export default function SelectFaculty() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[400px] justify-between"
+          className="w-full justify-between"
         >
-          {selectedFaculty !== -1 && faculties?.data
-            ? faculties.data.find(
+          {selectedFaculty !== -1 && faculties
+            ? faculties.find(
                 (faculty: Faculty) => faculty.id === selectedFaculty
               )?.name_en
             : 'Select faculty...'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0">
+      <PopoverContent className="w-full p-0">
         <Command>
           <CommandInput placeholder="Search faculty..." />
           <CommandList>
             <CommandEmpty>No faculty found</CommandEmpty>
             <CommandGroup>
-              {faculties?.data &&
-                faculties.data.map((faculty: Faculty) => (
+              {faculties &&
+                faculties.map((faculty: Faculty) => (
                   <CommandItem
                     key={faculty.id}
                     value={faculty.name_en}
