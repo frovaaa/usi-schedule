@@ -11,7 +11,7 @@ export default function SelectedCoursesList() {
     useAppContext();
 
   return (
-    <ScrollArea className="h-72 w-full rounded-md border ">
+    <ScrollArea className="h-64 w-full rounded-md border ">
       <div className="p-4">
         <h4 className="mb-1 text-sm font-medium leading-none">
           Selected Courses
