@@ -29,13 +29,11 @@ export default function SelectCourses() {
     selectedEducation,
     fetchCourses,
     addSelectedCourse,
-    removeSelectedCourse,
   } = useAppContext();
 
   useEffect(() => {
     if (selectedEducation !== -1) {
       fetchCourses(selectedEducation);
-      console.log(courses);
     }
   }, [selectedEducation]);
 

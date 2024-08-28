@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { _fetchCourses, _fetchEducations } from '@/api/usi-api';
+import { _fetchCourses, _fetchEducations } from '@/app/api/usi-api';
 import { Course, Education } from '@/interfaces/AppInterfaces';
 
 interface AppState {
@@ -59,7 +59,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
       if (prev.includes(courseId)) {
         return prev;
       }
-      return [...prev, courseId];
+      return [...prev, courseId].sort();
     });
   };
 

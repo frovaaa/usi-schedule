@@ -24,9 +24,9 @@ export default function SelectedCoursesList() {
               return null;
             }
             return (
-              <>
+              <div key={courseId}>
                 <div className="flex items-center justify-between">
-                  <div key={courseId} className="text-sm">
+                  <div className="text-sm">
                     {courseInfo.name_en} - {courseInfo.semester_academic_year}
                   </div>
                   <button
@@ -37,7 +37,7 @@ export default function SelectedCoursesList() {
                   </button>
                 </div>
                 <Separator className="my-2" />
-              </>
+              </div>
             );
           })}
       </div>
