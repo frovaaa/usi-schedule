@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import { AppContextProvider } from '@/context/AppContext';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export function Providers({
   children,
@@ -11,7 +12,10 @@ export function Providers({
       enableSystem
       disableTransitionOnChange
     >
-      <AppContextProvider>{children}</AppContextProvider>
+      <AppContextProvider>
+        {children}
+        <SpeedInsights />
+      </AppContextProvider>
     </ThemeProvider>
   );
 }
