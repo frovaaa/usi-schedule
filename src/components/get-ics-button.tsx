@@ -7,19 +7,18 @@ export default function GetIcsButton() {
   const { selectedCourses } = useAppContext();
 
   const generateIcsLink = (): string => {
-    if (!selectedCourses) return '';
+    if (!selectedCourses || selectedCourses.length === 0) return '';
 
     const baseUrl = `${window.location.origin}/api/calendar`;
     const coursesParam = selectedCourses
       .map((courseId: number) => courseId)
       .join(',');
     const httpLink = `${baseUrl}?courses=${coursesParam}`;
-    return httpLink.replace('http', 'webcal').replace('https', 'webcal');
+    return httpLink.replace('https', 'webcal').replace('http', 'webcal');
   };
 
   const handleGenerateLink = () => {
     const icsLink = generateIcsLink();
-    console.log(icsLink);
     if (icsLink) {
       window.location.href = icsLink;
     }
@@ -30,6 +29,7 @@ export default function GetIcsButton() {
       variant="outline"
       className="text-purple-700"
       onClick={handleGenerateLink}
+      disabled={!selectedCourses || selectedCourses.length === 0}
     >
       Add to Calendar
     </Button>

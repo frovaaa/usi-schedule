@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { _fetchCourses, _fetchEducations } from '@/app/api/usi-api';
 import { Course, Education } from '@/interfaces/AppInterfaces';
 
 interface AppState {
@@ -33,7 +32,8 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const fetchCourses = async (educationId: number) => {
     setLoading(true);
     try {
-      const data = await _fetchCourses(educationId);
+      const response = await fetch(`api/courses?educationId=${educationId}`);
+      const data = await response.json();
       setCourses(data);
     } catch (error) {
       console.error('Error fetching courses:', error);
@@ -45,7 +45,8 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const fetchEducations = async () => {
     setLoading(true);
     try {
-      const data = await _fetchEducations();
+      const response = await fetch('api/educations');
+      const data = await response.json();
       setEducations(data);
     } catch (error) {
       console.error('Error fetching educations:', error);

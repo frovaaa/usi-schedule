@@ -1,33 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getCachedCourseSchedule } from '../usi-api';
+import { CourseSchedule } from '@/interfaces/AppInterfaces';
 import ical, { ICalEventData } from 'ical-generator';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const coursesParam = searchParams.get('courses');
 
-  const calendar = ical({ name: 'Course Schedule' });
+  if (!coursesParam) {
+    return NextResponse.json('Missing courses', { status: 400 });
+  }
+  const calendar = ical({ name: 'USI Courses Schedule' });
 
-  // add a test event
-  const event: ICalEventData = {
-    start: new Date(),
-    end: new Date(),
-    summary: 'Test Event',
-    description: 'This is a test event',
-  };
+  const courseIds = coursesParam
+    .split(',')
+    .map((courseId) => parseInt(courseId, 10));
 
-  calendar.createEvent(event);
-
-  // return the calendar as a response
-  const response = new NextResponse(calendar.toString(), {
-    headers: {
-      'Content-Type': 'text/calendar',
-      'Content-Disposition': 'inline; filename="course-schedule.ics"',
-    },
+  courseIds.forEach(async (courseId) => {
+    try {
+      const courseSchedules = await getCachedCourseSchedule(courseId);
+      courseSchedules.forEach((schedule: CourseSchedule) => {
+        const event: ICalEventData = {
+          start: new Date(schedule.start_date),
+          end: new Date(schedule.end_date),
+          location: {
+            title: schedule.location.campus,
+            address: schedule.location.classroom,
+          },
+        };
+        calendar.createEvent(event);
+      });
+    } catch (error) {
+      return NextResponse.json('Failed to fetch course schedules', {
+        status: 500,
+      });
+    }
   });
-
-  return response;
-
-  // return NextResponse.json({
-  //   events: coursesParam ? coursesParam : 'No courses provided',
-  // });
 }

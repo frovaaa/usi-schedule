@@ -1,6 +1,6 @@
-import { Course } from '@/interfaces/AppInterfaces';
+import { unstable_cache } from 'next/cache';
 
-export const _fetchCourses = async (educationId: number) => {
+const fetchCourses = async (educationId: number) => {
   const response = await fetch(
     `https://search.usi.ch/api/educations/${educationId}/courses`
   );
@@ -8,10 +8,15 @@ export const _fetchCourses = async (educationId: number) => {
     throw new Error('Failed to fetch courses');
   }
   const result: any = await response.json();
-  return result?.data.filter((course: Course) => course.name_en !== '');
+  return result?.data;
 };
 
-export const _fetchEducations = async () => {
+export const getCachedCourses = unstable_cache(fetchCourses, ['educationId'], {
+  tags: ['courses'],
+  revalidate: 60 * 60 * 24 * 30,
+});
+
+const fetchEducations = async () => {
   const response = await fetch('https://search.usi.ch/api/educations');
   if (!response.ok) {
     throw new Error('Failed to fetch educations');
@@ -19,3 +24,28 @@ export const _fetchEducations = async () => {
   const result: any = await response.json();
   return result;
 };
+
+export const getCachedEducations = unstable_cache(fetchEducations, [], {
+  tags: ['educations'],
+  revalidate: 60 * 60 * 24 * 30,
+});
+
+const fetchCourseSchedule = async (courseId: number) => {
+  const response = await fetch(
+    `https://search.usi.ch/api/courses/${courseId}/schedules`
+  );
+  if (!response.ok) {
+    throw new Error('Failed to fetch course schedule');
+  }
+  const result: any = await response.json();
+  return result?.data;
+};
+
+export const getCachedCourseSchedule = unstable_cache(
+  fetchCourseSchedule,
+  ['courseId'],
+  {
+    tags: ['course-schedule'],
+    revalidate: 60 * 60 * 24,
+  }
+);
