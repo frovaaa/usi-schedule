@@ -1,62 +1,54 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { Faculty, Course } from '@/interfaces/AppInterfaces';
+import { _fetchCourses, _fetchEducations } from '@/api/usi-api';
+import { Course, Education } from '@/interfaces/AppInterfaces';
 
 interface AppState {
-  faculties: Faculty[] | null;
-  selectedFaculty: Faculty['id'] | -1;
   courses: Course[] | null;
   selectedCourses: Course['id'][] | null;
   schedules: any | null;
   loading: boolean;
-  fetchFaculties: () => Promise<void>;
-  setSelectedFaculty: (facultyId: number) => void;
-  fetchCourses: (facultyId: number) => Promise<void>;
+  fetchCourses: (educationId: number) => Promise<void>;
   addSelectedCourse: (courseId: number) => void;
   removeSelectedCourse: (courseId: number) => void;
   getCourseInfo: (courseId: number) => Course | undefined;
+
+  fetchEducations: () => Promise<void>;
+  educations: Education[] | null;
+  selectedEducation: Education['id'] | -1;
+  setSelectedEducation: (educationId: number) => void;
 }
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
-  const [faculties, setFaculties] = useState<Faculty[] | null>(null);
-  const [selectedFaculty, setSelectedFaculty] = useState<number>(-1);
   const [courses, setCourses] = useState<Course[] | null>(null);
   const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
   const [schedules, setSchedules] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [educations, setEducations] = useState<Education[] | null>(null);
+  const [selectedEducation, setSelectedEducation] = useState<number>(-1);
 
-  const fetchFaculties = async () => {
+  const fetchCourses = async (educationId: number) => {
     setLoading(true);
     try {
-      const response = await fetch('https://search.usi.ch/api/faculties');
-      if (!response.ok) {
-        throw new Error('Failed to fetch faculties');
-      }
-      const result: any = await response.json();
-      setFaculties(result?.data);
+      const data = await _fetchCourses(educationId);
+      setCourses(data);
     } catch (error) {
-      console.error('Error fetching faculties:', error);
+      console.error('Error fetching courses:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchCourses = async (facultyId: number) => {
+  const fetchEducations = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://search.usi.ch/api/faculties/${facultyId}/courses`
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch courses');
-      }
-      const result: any = await response.json();
-      setCourses(result.data);
+      const data = await _fetchEducations();
+      setEducations(data);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Error fetching educations:', error);
     } finally {
       setLoading(false);
     }
@@ -82,18 +74,18 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AppContext.Provider
       value={{
-        faculties,
-        selectedFaculty,
-        setSelectedFaculty,
         courses,
         selectedCourses,
         schedules,
         loading,
-        fetchFaculties,
         fetchCourses,
         addSelectedCourse,
         removeSelectedCourse,
         getCourseInfo,
+        fetchEducations,
+        educations,
+        selectedEducation,
+        setSelectedEducation,
       }}
     >
       {children}

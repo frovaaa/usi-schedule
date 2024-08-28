@@ -26,18 +26,18 @@ export default function SelectCourses() {
   const {
     courses,
     loading,
-    selectedFaculty,
+    selectedEducation,
     fetchCourses,
     addSelectedCourse,
     removeSelectedCourse,
   } = useAppContext();
 
   useEffect(() => {
-    if (selectedFaculty !== -1) {
-      fetchCourses(selectedFaculty);
+    if (selectedEducation !== -1) {
+      fetchCourses(selectedEducation);
       console.log(courses);
     }
-  }, [selectedFaculty]);
+  }, [selectedEducation]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,7 +58,7 @@ export default function SelectCourses() {
             <span className="truncate">
               {courses?.length
                 ? 'Select courses...'
-                : 'No courses available | Select a faculty first'}
+                : 'No courses available | Select an education first'}
             </span>
           )}
 

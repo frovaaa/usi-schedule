@@ -1,6 +1,6 @@
-import SelectFaculty from '@/components/select-faculty';
 import SelectCourses from '@/components/select-courses';
 import SelectedCoursesList from '@/components/selected-courses-list';
+import SelectEducation from '@/components/select-education';
 
 export default function Home() {
   return (
@@ -19,14 +19,10 @@ export default function Home() {
 
         {/* Selection */}
         <div className="w-full max-w-3xl p-8 bg-white rounded-lg shadow-lg space-y-4">
-          <h2 className="text-3xl font-bold mb-0">
-            Select the faculty
-          </h2>
-          <SelectFaculty />
+          <h2 className="text-3xl font-bold mb-0">Select the education</h2>
+          <SelectEducation />
 
-          <h2 className="text-3xl font-bold mb-0">
-            Select the courses
-          </h2>
+          <h2 className="text-3xl font-bold mb-0">Select the courses</h2>
           <SelectCourses />
           <SelectedCoursesList />
         </div>
