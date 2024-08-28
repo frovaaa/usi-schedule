@@ -19,6 +19,7 @@ export default function GetIcsButton() {
 
   const handleGenerateLink = () => {
     const icsLink = generateIcsLink();
+    console.log(icsLink);
     if (icsLink) {
       window.location.href = icsLink;
     }
