@@ -13,13 +13,14 @@ export default function GetIcsButton() {
     const coursesParam = selectedCourses
       .map((courseId: number) => courseId)
       .join(',');
-    return `${baseUrl}?courses=${coursesParam}`;
+    const httpLink = `${baseUrl}?courses=${coursesParam}`;
+    return httpLink.replace('http', 'webcal').replace('https', 'webcal');
   };
 
   const handleGenerateLink = () => {
     const icsLink = generateIcsLink();
     if (icsLink) {
-      window.open(icsLink, '_blank');
+      window.location.href = icsLink;
     }
   };
 
