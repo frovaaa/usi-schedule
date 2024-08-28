@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedCourseSchedule } from '../usi-api';
-import { CourseSchedule } from '@/interfaces/AppInterfaces';
 import ical, { ICalEventData } from 'ical-generator';
 
 export async function GET(req: NextRequest) {
@@ -10,38 +9,42 @@ export async function GET(req: NextRequest) {
   if (!coursesParam) {
     return NextResponse.json('Missing courses', { status: 400 });
   }
+
   const calendar = ical({ name: 'USI Courses Schedule' });
 
   const courseIds = coursesParam
     .split(',')
     .map((courseId) => parseInt(courseId, 10));
 
-  courseIds.forEach(async (courseId) => {
-    try {
-      const courseSchedules = await getCachedCourseSchedule(courseId);
-      courseSchedules.forEach((schedule: CourseSchedule) => {
-        const event: ICalEventData = {
-          start: new Date(schedule.start_date),
-          end: new Date(schedule.end_date),
-          location: {
-            title: schedule.location.campus,
-            address: schedule.location.classroom,
-          },
-        };
-        calendar.createEvent(event);
-      });
+  try {
+    await Promise.all(
+      courseIds.map(async (courseId) => {
+        const courseSchedules = await getCachedCourseSchedule(courseId);
+        courseSchedules.forEach((schedule: any) => {
+          const event: ICalEventData = {
+            summary: schedule.course.name_en || schedule.course.name_it,
+            start: new Date(schedule.start),
+            end: new Date(schedule.end),
+            location: {
+              title: schedule.place.building.campus.name,
+              address: schedule.place.office,
+            },
+          };
+          calendar.createEvent(event);
+        });
+      })
+    );
 
-      const calendarData = calendar.toString();
-      return NextResponse.json(calendarData, {
-        headers: {
-          'Content-Type': 'text/calendar',
-          'Content-Disposition': 'inline; filename="usi-courses.ics"',
-        },
-      });
-    } catch (error) {
-      return NextResponse.json('Failed to fetch course schedules', {
-        status: 500,
-      });
-    }
-  });
+    const calendarData = calendar.toString();
+    return new NextResponse(calendarData, {
+      headers: {
+        'Content-Type': 'text/calendar',
+        'Content-Disposition': 'inline; filename="usi-courses.ics"',
+      },
+    });
+  } catch (error) {
+    return NextResponse.json('Failed to fetch course schedules', {
+      status: 500,
+    });
+  }
 }
