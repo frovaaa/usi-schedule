@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-  return NextResponse.json({ message: 'Hello, world!' });
+  const { searchParams } = new URL(req.url);
+  const eventsParam = searchParams.get('events');
+
+  return NextResponse.json({
+    events: eventsParam ? JSON.parse(eventsParam) : 'No events',
+  });
 }
