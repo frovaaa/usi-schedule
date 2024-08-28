@@ -60,6 +60,7 @@ export default function SelectEducation() {
 
   useEffect(() => {
     fetchEducations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -79,7 +80,7 @@ export default function SelectEducation() {
     } else {
       setFilteredEducations(educations);
     }
-  }, [selectedEduType]);
+  }, [selectedEduType, educations, setSelectedEducation]);
 
   return (
     <div className="columns-2">
@@ -106,7 +107,7 @@ export default function SelectEducation() {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between"
+            className="w-full justify-between truncate"
           >
             {selectedEducation !== -1 && filteredEducations
               ? filteredEducations.find(

@@ -35,6 +35,7 @@ export default function SelectCourses() {
     if (selectedEducation !== -1) {
       fetchCourses(selectedEducation);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEducation]);
 
   return (
