@@ -30,6 +30,14 @@ export async function GET(req: NextRequest) {
         };
         calendar.createEvent(event);
       });
+
+      const calendarData = calendar.toString();
+      return NextResponse.json(calendarData, {
+        headers: {
+          'Content-Type': 'text/calendar',
+          'Content-Disposition': 'inline; filename="usi-courses.ics"',
+        },
+      });
     } catch (error) {
       return NextResponse.json('Failed to fetch course schedules', {
         status: 500,
