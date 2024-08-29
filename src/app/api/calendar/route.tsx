@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
   if (!coursesParam) {
     return NextResponse.json('Missing courses', { status: 400 });
   }
-
   const calendar = ical({ name: 'USI Courses Schedule' });
 
   const courseIds = coursesParam
@@ -40,6 +39,7 @@ export async function GET(req: NextRequest) {
       headers: {
         'Content-Type': 'text/calendar',
         'Content-Disposition': 'inline; filename="usi-courses.ics"',
+        'Cache-Control': 's-maxage=86400, stale-while-revalidate',
       },
     });
   } catch (error) {
