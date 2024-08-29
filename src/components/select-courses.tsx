@@ -20,6 +20,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import LoadingPurpleSpinner from './ui/loading-purple-spinner';
+import { Course } from '@/interfaces/AppInterfaces';
 
 export default function SelectCourses() {
   const [open, setOpen] = useState(false);
@@ -71,12 +72,12 @@ export default function SelectCourses() {
             <CommandEmpty>No course found.</CommandEmpty>
             <CommandGroup>
               {courses &&
-                courses?.map((course) => (
+                courses?.map((course: Course) => (
                   <CommandItem
                     key={course.id}
                     value={course.name_en + '|' + course.semester_academic_year}
                     onSelect={() => {
-                      addSelectedCourse(course.id);
+                      addSelectedCourse(course);
                       setOpen(false);
                     }}
                   >

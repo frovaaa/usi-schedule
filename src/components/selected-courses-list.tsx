@@ -7,7 +7,7 @@ import { Course } from '@/interfaces/AppInterfaces';
 import { Trash2 } from 'lucide-react';
 
 export default function SelectedCoursesList() {
-  const { selectedCourses, getCourseInfo, removeSelectedCourse } =
+  const { selectedCourses, removeSelectedCourse } =
     useAppContext();
 
   return (
@@ -18,19 +18,15 @@ export default function SelectedCoursesList() {
         </h4>
         <Separator className="my-4 mt-2" />
         {selectedCourses &&
-          selectedCourses.map((courseId) => {
-            const courseInfo: Course | undefined = getCourseInfo(courseId);
-            if (!courseInfo) {
-              return null;
-            }
+          selectedCourses.map((course: Course) => {
             return (
-              <div key={courseId}>
+              <div key={course.id}>
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
-                    {courseInfo.name_en} - {courseInfo.semester_academic_year}
+                    {course.name_en} - {course.semester_academic_year}
                   </div>
                   <button
-                    onClick={() => removeSelectedCourse(courseId)}
+                    onClick={() => removeSelectedCourse(course.id)}
                     className="text-red-600"
                   >
                     <Trash2 className="h-4 w-4" />

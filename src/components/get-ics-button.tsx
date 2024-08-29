@@ -2,6 +2,7 @@
 
 import { Button } from './ui/button';
 import { useAppContext } from '@/context/AppContext';
+import { Course } from '@/interfaces/AppInterfaces';
 
 export default function GetIcsButton() {
   const { selectedCourses } = useAppContext();
@@ -11,7 +12,7 @@ export default function GetIcsButton() {
 
     const baseUrl = `${window.location.origin}/api/calendar`;
     const coursesParam = selectedCourses
-      .map((courseId: number) => courseId)
+      .map((course: Course) => course.id)
       .join(',');
     const httpLink = `${baseUrl}?courses=${coursesParam}`;
     return httpLink.replace('https', 'webcal').replace('http', 'webcal');

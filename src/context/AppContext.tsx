@@ -5,14 +5,12 @@ import { Course, Education } from '@/interfaces/AppInterfaces';
 
 interface AppState {
   courses: Course[] | null;
-  selectedCourses: Course['id'][] | null;
+  selectedCourses: Course[] | null;
   schedules: any | null;
   loading: boolean;
   fetchCourses: (educationId: number) => Promise<void>;
-  addSelectedCourse: (courseId: number) => void;
+  addSelectedCourse: (courseId: Course) => void;
   removeSelectedCourse: (courseId: number) => void;
-  getCourseInfo: (courseId: number) => Course | undefined;
-
   fetchEducations: () => Promise<void>;
   educations: Education[] | null;
   selectedEducation: Education['id'] | -1;
@@ -23,7 +21,7 @@ const AppContext = createContext<AppState | undefined>(undefined);
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [courses, setCourses] = useState<Course[] | null>(null);
-  const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
   const [schedules, setSchedules] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [educations, setEducations] = useState<Education[] | null>(null);
@@ -55,21 +53,19 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const addSelectedCourse = (courseId: number) => {
-    setSelectedCourses((prev) => {
-      if (prev.includes(courseId)) {
+  const addSelectedCourse = (newCourse: Course) => {
+    setSelectedCourses((prev: Course[]) => {
+      if (prev.some((course: Course) => course.id === newCourse.id)) {
         return prev;
       }
-      return [...prev, courseId].sort();
+      return [...prev, { ...newCourse }].sort((a, b) => a.id - b.id);
     });
   };
 
   const removeSelectedCourse = (courseId: number) => {
-    setSelectedCourses((prev) => prev.filter((id) => id !== courseId));
-  };
-
-  const getCourseInfo = (courseId: number): Course | undefined => {
-    return courses?.find((course: Course) => course.id === courseId);
+    setSelectedCourses((prev) =>
+      prev.filter((course: Course) => course.id !== courseId)
+    );
   };
 
   return (
@@ -82,7 +78,6 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         fetchCourses,
         addSelectedCourse,
         removeSelectedCourse,
-        getCourseInfo,
         fetchEducations,
         educations,
         selectedEducation,
