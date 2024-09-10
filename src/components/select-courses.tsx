@@ -58,7 +58,7 @@ export default function SelectCourses() {
             <span className="truncate">
               {courses?.length
                 ? 'Select courses...'
-                : 'No courses available | Select an education first'}
+                : 'No courses available'}
             </span>
           )}
 

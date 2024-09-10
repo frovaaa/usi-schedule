@@ -7,11 +7,10 @@ import { Course } from '@/interfaces/AppInterfaces';
 import { Trash2 } from 'lucide-react';
 
 export default function SelectedCoursesList() {
-  const { selectedCourses, removeSelectedCourse } =
-    useAppContext();
+  const { selectedCourses, removeSelectedCourse } = useAppContext();
 
   return (
-    <ScrollArea className="h-64 w-full rounded-md border ">
+    <ScrollArea className="h-64 w-full rounded-md border">
       <div className="p-4">
         <h4 className="mb-1 text-sm font-medium leading-none">
           Selected Courses
