@@ -1,38 +1,79 @@
 'use client';
 
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { useAppContext } from '@/context/AppContext';
 import { Course } from '@/interfaces/AppInterfaces';
+import { generateIcsLink } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
-export default function GetIcsButton() {
+export default function GetIcsButton({
+  openDirectly,
+}: {
+  openDirectly: boolean;
+}) {
   const { selectedCourses } = useAppContext();
+  const { toast } = useToast();
 
-  const generateIcsLink = (): string => {
-    if (!selectedCourses || selectedCourses.length === 0) return '';
+  const copyToClipboard = (text: string) => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        () => {
+          toast({
+            description: 'Link copied to clipboard',
+          });
+        },
+        (err) => {
+          console.error('Could not copy text: ', err);
+          fallbackCopyTextToClipboard(text);
+        }
+      );
+    } else {
+      fallbackCopyTextToClipboard(text);
+    }
+  };
 
-    const baseUrl = `${window.location.origin}/api/calendar`;
-    const coursesParam = selectedCourses
-      .map((course: Course) => course.id)
-      .join(',');
-    const httpLink = `${baseUrl}?courses=${coursesParam}`;
-    return httpLink.replace('https', 'webcal').replace('http', 'webcal');
+  const fallbackCopyTextToClipboard = (text: string) => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed'; // Avoid scrolling to bottom
+    textArea.style.opacity = '0'; // Make it invisible
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        toast({
+          description: 'Link copied to clipboard',
+        });
+      } else {
+        console.error('Fallback: Oops, unable to copy');
+      }
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+    document.body.removeChild(textArea);
   };
 
   const handleGenerateLink = () => {
-    const icsLink = generateIcsLink();
+    const icsLink = generateIcsLink(selectedCourses as Course[]);
     if (icsLink) {
-      window.location.href = icsLink;
+      if (openDirectly) {
+        window.location.href = icsLink;
+      } else {
+        copyToClipboard(icsLink);
+      }
     }
   };
 
   return (
     <Button
       variant="outline"
-      className="text-purple-700"
+      className="text-purple-700 w-full"
       onClick={handleGenerateLink}
       disabled={!selectedCourses || selectedCourses.length === 0}
     >
-      Add to Calendar
+      {openDirectly ? 'Add to Calendar' : 'Copy Link'}
     </Button>
   );
 }

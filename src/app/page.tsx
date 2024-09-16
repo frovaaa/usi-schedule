@@ -17,14 +17,20 @@ export default function Home() {
       </header>
 
       {/* Selection */}
-      <div className="w-full max-w-3xl p-8 rounded-lg shadow-lg space-y-4 bg-card text-card-foreground dark:bg-card dark:text-card-foreground">
+      <div className=" w-full max-w-3xl p-8 rounded-lg shadow-lg space-y-4 bg-card text-card-foreground dark:bg-card dark:text-card-foreground">
         <h2 className="text-3xl font-bold mb-0">Select the education</h2>
         <SelectEducation />
 
         <h2 className="text-3xl font-bold mb-0">Select the courses</h2>
         <SelectCourses />
         <SelectedCoursesList />
-        <GetIcsButton />
+
+        {/* Row with 3 elements */}
+        <div className="flex flex-col items-center md:flex-row md:justify-center md:items-center md:space-x-4">
+          <GetIcsButton openDirectly={true} />
+          <p className="text-gray-500 text-sm text-center">or</p>
+          <GetIcsButton openDirectly={false} />
+        </div>
       </div>
 
       {/* Disclaimer */}
