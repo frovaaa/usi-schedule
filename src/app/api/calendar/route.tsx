@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       headers: {
         'Content-Type': 'text/calendar',
         'Content-Disposition': 'inline; filename="usi-courses.ics"',
-        'Cache-Control': 's-maxage=86400, stale-while-revalidate',
+        'Cache-Control': 's-maxage=21600, stale-while-revalidate',
       },
     });
   } catch (error) {
