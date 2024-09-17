@@ -46,6 +46,6 @@ export const getCachedCourseSchedule = unstable_cache(
   ['courseId'],
   {
     tags: ['course-schedule'],
-    revalidate: 60 * 60 * 24,
+    revalidate: 60 * 60 * 6,
   }
 );
