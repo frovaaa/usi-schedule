@@ -25,8 +25,8 @@ export async function GET(req: NextRequest) {
             start: new Date(schedule.start),
             end: new Date(schedule.end),
             location: {
-              title: schedule.place.building.campus.name,
-              address: schedule.place.office,
+              title: schedule.place.office,
+              address: schedule.place.building.campus.name,
             },
           };
           calendar.createEvent(event);
