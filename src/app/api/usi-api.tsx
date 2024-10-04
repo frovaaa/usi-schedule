@@ -7,7 +7,7 @@ const fetchCourses = async (educationId: number) => {
   if (!response.ok) {
     throw new Error('Failed to fetch courses');
   }
-  const result: any = await response.json();
+  const result = await response.json();
   return result?.data;
 };
 
@@ -21,7 +21,7 @@ const fetchEducations = async () => {
   if (!response.ok) {
     throw new Error('Failed to fetch educations');
   }
-  const result: any = await response.json();
+  const result = await response.json();
   return result;
 };
 
@@ -37,7 +37,7 @@ const fetchCourseSchedule = async (courseId: number) => {
   if (!response.ok) {
     throw new Error('Failed to fetch course schedule');
   }
-  const result: any = await response.json();
+  const result = await response.json();
   return result?.data;
 };
 

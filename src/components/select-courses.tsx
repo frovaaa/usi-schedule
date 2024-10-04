@@ -43,31 +43,29 @@ export default function SelectCourses() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          role="combobox"
+          variant='outline'
+          role='combobox'
           aria-expanded={open}
-          className="w-full justify-between"
+          className='w-full justify-between'
           disabled={loading || !courses?.length}
         >
           {loading ? (
-            <div className="flex items-center ">
+            <div className='flex items-center'>
               <LoadingPurpleSpinner />
-              <span className="ml-5">Loading courses... It takes a bit...</span>
+              <span className='ml-5'>Loading courses... It takes a bit...</span>
             </div>
           ) : (
-            <span className="truncate">
-              {courses?.length
-                ? 'Select courses...'
-                : 'No courses available'}
+            <span className='truncate'>
+              {courses?.length ? 'Select courses...' : 'No courses available'}
             </span>
           )}
 
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className='w-full p-0'>
         <Command>
-          <CommandInput placeholder="Search course..." />
+          <CommandInput placeholder='Search course...' />
           <CommandList>
             <CommandEmpty>No course found.</CommandEmpty>
             <CommandGroup>

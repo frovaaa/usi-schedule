@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getCachedEducations } from '../usi-api';
 import { Education } from '@/interfaces/AppInterfaces';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const educations = await getCachedEducations();
     const formattedEducations: Education[] = educations.map(
-      (education: any) => ({
+      (education: Education) => ({
         id: education.id,
         name_en: education.name_en || education.name_it,
         type: {
@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
         'Content-Type': 'application/json',
       },
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json('Failed to fetch educations', { status: 500 });
   }

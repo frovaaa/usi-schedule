@@ -6,7 +6,6 @@ import { Course, Education } from '@/interfaces/AppInterfaces';
 interface AppState {
   courses: Course[] | null;
   selectedCourses: Course[] | null;
-  schedules: any | null;
   loading: boolean;
   fetchCourses: (educationId: number) => Promise<void>;
   addSelectedCourse: (courseId: Course) => void;
@@ -22,7 +21,6 @@ const AppContext = createContext<AppState | undefined>(undefined);
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [courses, setCourses] = useState<Course[] | null>(null);
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
-  const [schedules, setSchedules] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [educations, setEducations] = useState<Education[] | null>(null);
   const [selectedEducation, setSelectedEducation] = useState<number>(-1);
@@ -73,7 +71,6 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
       value={{
         courses,
         selectedCourses,
-        schedules,
         loading,
         fetchCourses,
         addSelectedCourse,

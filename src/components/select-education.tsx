@@ -33,7 +33,6 @@ export default function SelectEducation() {
   const [open, setOpen] = useState(false);
   const {
     educations,
-    loading,
     fetchEducations,
     selectedEducation,
     setSelectedEducation,
@@ -51,11 +50,13 @@ export default function SelectEducation() {
     .map((education: Education) => education.type);
 
   const _setSelectedEduType = (type: string) => {
-    type == 'All'
-      ? setSelectedEduType(-1)
-      : setSelectedEduType(
-          educationTypes?.find((eduType) => eduType.name_en === type)?.id || -1
-        );
+    if (type === 'All') {
+      setSelectedEduType(-1);
+    } else {
+      const selectedTypeId =
+        educationTypes?.find((eduType) => eduType.name_en === type)?.id || -1;
+      setSelectedEduType(selectedTypeId);
+    }
   };
 
   useEffect(() => {
@@ -83,13 +84,13 @@ export default function SelectEducation() {
   }, [selectedEduType, educations, setSelectedEducation]);
 
   return (
-    <div className="columns-2">
+    <div className='columns-2'>
       <Select onValueChange={(val) => _setSelectedEduType(val)}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Type" />
+        <SelectTrigger className='w-full'>
+          <SelectValue placeholder='Type' />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem className="text-purple-500" value="All">
+          <SelectItem className='text-purple-500' value='All'>
             All
           </SelectItem>
           {educationTypes &&
@@ -104,22 +105,22 @@ export default function SelectEducation() {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            role="combobox"
+            variant='outline'
+            role='combobox'
             aria-expanded={open}
-            className="w-full justify-between truncate"
+            className='w-full justify-between truncate'
           >
             {selectedEducation !== -1 && filteredEducations
               ? filteredEducations.find(
                   (education: Education) => education.id === selectedEducation
                 )?.name_en
               : 'Select education...'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
+        <PopoverContent className='w-full p-0'>
           <Command>
-            <CommandInput placeholder="Search education..." />
+            <CommandInput placeholder='Search education...' />
             <CommandList>
               <CommandEmpty>No education found</CommandEmpty>
               <CommandGroup>
@@ -136,7 +137,7 @@ export default function SelectEducation() {
                         );
                         setOpen(false);
                       }}
-                      className="cursor-pointer text-left"
+                      className='cursor-pointer text-left'
                     >
                       <Check
                         className={cn(

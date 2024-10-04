@@ -7,8 +7,10 @@ export interface Course {
 export interface Education {
   id: number;
   name_en: string;
+  name_it?: string;
   type: {
     id: number;
     name_en: string;
+    name_it?: string;
   };
 }

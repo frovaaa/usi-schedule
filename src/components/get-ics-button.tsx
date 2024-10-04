@@ -68,8 +68,8 @@ export default function GetIcsButton({
 
   return (
     <Button
-      variant="outline"
-      className="text-purple-700 w-full"
+      variant='outline'
+      className='w-full text-purple-700'
       onClick={handleGenerateLink}
       disabled={!selectedCourses || selectedCourses.length === 0}
     >
