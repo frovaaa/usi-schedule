@@ -13,7 +13,8 @@ export async function GET(req: NextRequest) {
   try {
     const courses = await getCachedCourses(parseInt(educationId, 10));
     const formattedCourses: Course[] = courses
-      .filter((course) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .filter((course: any) => {
         const currentYearSubstring = new Date().getFullYear().toString();
         const currentMonth = new Date().getMonth() + 1; // Adding 1 to get the month from 1 to 12
         const isSpringSemester = currentMonth >= 2 && currentMonth <= 7; // Assuming spring semester is from February to July
@@ -37,7 +38,8 @@ export async function GET(req: NextRequest) {
           return false;
         }
       })
-      .map((course) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((course: any) => ({
         id: course.id,
         name_en: course.name_en || course.name_it,
         semester_academic_year: course.semester_academic_year,

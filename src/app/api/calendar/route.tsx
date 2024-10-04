@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
     await Promise.all(
       courseIds.map(async (courseId) => {
         const courseSchedules = await getCachedCourseSchedule(courseId);
-        courseSchedules.forEach((schedule) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        courseSchedules.forEach((schedule: any) => {
           const event: ICalEventData = {
             summary: schedule.course.name_en || schedule.course.name_it,
             start: new Date(schedule.start),
