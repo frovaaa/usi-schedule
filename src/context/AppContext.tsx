@@ -2,6 +2,11 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Course, Education } from '@/interfaces/AppInterfaces';
+import {
+  formatCourses,
+  formatEducations,
+  USI_API_BASE_URL,
+} from '@/lib/usi-data';
 
 interface AppState {
   courses: Course[] | null;
@@ -18,6 +23,34 @@ interface AppState {
 
 const AppContext = createContext<AppState | undefined>(undefined);
 
+const fetchJson = async (url: string) => {
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request to ${url} failed with status ${response.status}`);
+  }
+
+  return response.json() as Promise<unknown>;
+};
+
+const fetchWithFallback = async <T,>(
+  internalUrl: string,
+  publicUrl: string,
+  format: (value: unknown) => T
+) => {
+  try {
+    return format(await fetchJson(internalUrl));
+  } catch (error) {
+    console.warn(
+      `The cached API request failed; retrying ${publicUrl} directly.`,
+      error
+    );
+    return format(await fetchJson(publicUrl));
+  }
+};
+
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [courses, setCourses] = useState<Course[] | null>(null);
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
@@ -28,11 +61,15 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const fetchCourses = async (educationId: number) => {
     setLoading(true);
     try {
-      const response = await fetch(`api/courses?educationId=${educationId}`);
-      const data = await response.json();
+      const data = await fetchWithFallback(
+        `/api/courses?educationId=${educationId}`,
+        `${USI_API_BASE_URL}/educations/${educationId}/courses`,
+        formatCourses
+      );
       setCourses(data);
     } catch (error) {
       console.error('Error fetching courses:', error);
+      setCourses([]);
     } finally {
       setLoading(false);
     }
@@ -41,11 +78,15 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const fetchEducations = async () => {
     setLoading(true);
     try {
-      const response = await fetch('api/educations');
-      const data = await response.json();
+      const data = await fetchWithFallback(
+        '/api/educations',
+        `${USI_API_BASE_URL}/educations`,
+        formatEducations
+      );
       setEducations(data);
     } catch (error) {
       console.error('Error fetching educations:', error);
+      setEducations([]);
     } finally {
       setLoading(false);
     }

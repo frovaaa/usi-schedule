@@ -38,16 +38,17 @@ export default function SelectEducation() {
     setSelectedEducation,
   } = useAppContext();
   const [selectedEduType, setSelectedEduType] = useState<number>(-1);
+  const availableEducations = Array.isArray(educations) ? educations : [];
 
   const filteredEducations =
     selectedEduType === -1
-      ? educations
-      : educations?.filter(
+      ? availableEducations
+      : availableEducations.filter(
           (education: Education) => education.type.id === selectedEduType
-        ) || null;
+        );
 
-  const educationTypes = educations
-    ?.filter(
+  const educationTypes = availableEducations
+    .filter(
       (education: Education, index: number, self: Education[]) =>
         index === self.findIndex((t) => t.type.id === education.type.id)
     )
@@ -96,7 +97,7 @@ export default function SelectEducation() {
             aria-expanded={open}
             className='w-full justify-between truncate'
           >
-            {selectedEducation !== -1 && filteredEducations
+            {selectedEducation !== -1
               ? filteredEducations.find(
                   (education: Education) => education.id === selectedEducation
                 )?.name_en

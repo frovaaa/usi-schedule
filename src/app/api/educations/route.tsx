@@ -1,20 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getCachedEducations } from '../usi-api';
-import { Education } from '@/interfaces/AppInterfaces';
+import { formatEducations } from '@/lib/usi-data';
 
 export async function GET() {
   try {
     const educations = await getCachedEducations();
-    const formattedEducations: Education[] = educations.map(
-      (education: Education) => ({
-        id: education.id,
-        name_en: education.name_en || education.name_it,
-        type: {
-          id: education.type.id,
-          name_en: education.type.name_en || education.type.name_it,
-        },
-      })
-    );
+    const formattedEducations = formatEducations(educations);
 
     return NextResponse.json(formattedEducations, {
       status: 200,
@@ -22,8 +13,11 @@ export async function GET() {
         'Content-Type': 'application/json',
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    return NextResponse.json('Failed to fetch educations', { status: 500 });
+    console.error('[api/educations] Failed to fetch educations', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch educations' },
+      { status: 502 }
+    );
   }
 }

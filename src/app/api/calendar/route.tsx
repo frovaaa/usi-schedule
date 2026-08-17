@@ -19,8 +19,7 @@ export async function GET(req: NextRequest) {
     await Promise.all(
       courseIds.map(async (courseId) => {
         const courseSchedules = await getCachedCourseSchedule(courseId);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        courseSchedules.forEach((schedule: any) => {
+        courseSchedules.forEach((schedule) => {
           const event: ICalEventData = {
             summary: schedule.course.name_en || schedule.course.name_it,
             start: new Date(schedule.start),
@@ -43,10 +42,14 @@ export async function GET(req: NextRequest) {
         'Cache-Control': 's-maxage=21600, stale-while-revalidate',
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    return NextResponse.json('Failed to fetch course schedules', {
-      status: 500,
+    console.error('[api/calendar] Failed to fetch course schedules', {
+      courseIds,
+      error,
     });
+    return NextResponse.json(
+      { error: 'Failed to fetch course schedules' },
+      { status: 502 }
+    );
   }
 }
