@@ -18,15 +18,23 @@ interface UsiCourseSchedule {
   };
 }
 
+class UsiApiError extends Error {
+  constructor(
+    resourceName: string,
+    readonly status: number
+  ) {
+    super(`USI API ${resourceName} request failed with status ${status}`);
+    this.name = 'UsiApiError';
+  }
+}
+
 const fetchUsiApi = async (path: string, resourceName: string) => {
   const response = await fetch(`${USI_API_BASE_URL}${path}`, {
     headers: { Accept: 'application/json' },
   });
 
   if (!response.ok) {
-    throw new Error(
-      `USI API ${resourceName} request failed with status ${response.status}`
-    );
+    throw new UsiApiError(resourceName, response.status);
   }
 
   return response.json() as Promise<unknown>;
@@ -58,10 +66,20 @@ export const getCachedEducations = unstable_cache(fetchEducations, [], {
 });
 
 const fetchCourseSchedule = async (courseId: number) => {
-  const result = await fetchUsiApi(
-    `/courses/${courseId}/schedules`,
-    'course schedule'
-  );
+  let result: unknown;
+  try {
+    result = await fetchUsiApi(
+      `/courses/${courseId}/schedules`,
+      'course schedule'
+    );
+  } catch (error) {
+    if (error instanceof UsiApiError && error.status === 404) {
+      console.info('[usi-api] Skipping removed course', { courseId });
+      return [];
+    }
+    throw error;
+  }
+
   if (
     typeof result !== 'object' ||
     result === null ||
