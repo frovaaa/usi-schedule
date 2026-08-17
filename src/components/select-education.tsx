@@ -38,18 +38,24 @@ export default function SelectEducation() {
     setSelectedEducation,
   } = useAppContext();
   const [selectedEduType, setSelectedEduType] = useState<number>(-1);
-  const [filteredEducations, setFilteredEducations] = useState<
-    Education[] | null
-  >(educations);
+  const availableEducations = Array.isArray(educations) ? educations : [];
 
-  const educationTypes = educations
-    ?.filter(
+  const filteredEducations =
+    selectedEduType === -1
+      ? availableEducations
+      : availableEducations.filter(
+          (education: Education) => education.type.id === selectedEduType
+        );
+
+  const educationTypes = availableEducations
+    .filter(
       (education: Education, index: number, self: Education[]) =>
         index === self.findIndex((t) => t.type.id === education.type.id)
     )
     .map((education: Education) => education.type);
 
   const _setSelectedEduType = (type: string) => {
+    setSelectedEducation(-1);
     if (type === 'All') {
       setSelectedEduType(-1);
     } else {
@@ -63,25 +69,6 @@ export default function SelectEducation() {
     fetchEducations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    setFilteredEducations(educations);
-  }, [educations]);
-
-  useEffect(() => {
-    setSelectedEducation(-1);
-    if (selectedEduType !== -1) {
-      setFilteredEducations(
-        educations
-          ? educations.filter(
-              (education: Education) => education.type.id === selectedEduType
-            )
-          : null
-      );
-    } else {
-      setFilteredEducations(educations);
-    }
-  }, [selectedEduType, educations, setSelectedEducation]);
 
   return (
     <div className='columns-2'>
@@ -110,7 +97,7 @@ export default function SelectEducation() {
             aria-expanded={open}
             className='w-full justify-between truncate'
           >
-            {selectedEducation !== -1 && filteredEducations
+            {selectedEducation !== -1
               ? filteredEducations.find(
                   (education: Education) => education.id === selectedEducation
                 )?.name_en

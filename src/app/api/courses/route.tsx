@@ -1,32 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedCourses } from '../usi-api';
-import { Course } from '@/interfaces/AppInterfaces';
+import { formatCourses } from '@/lib/usi-data';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const educationId = searchParams.get('educationId');
 
-  if (!educationId) {
+  const parsedEducationId = Number(educationId);
+  if (!Number.isInteger(parsedEducationId) || parsedEducationId <= 0) {
     return NextResponse.json('Missing educationId', { status: 400 });
   }
 
   try {
-    const courses = await getCachedCourses(parseInt(educationId, 10));
-    const formattedCourses: Course[] = courses
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((course: any) => ({
-        id: course.id,
-        name_en: course.name_en || course.name_it,
-        semester_academic_year: course.semester_academic_year,
-      }));
+    const courses = await getCachedCourses(parsedEducationId);
+    const formattedCourses = formatCourses(courses);
 
     return NextResponse.json(formattedCourses, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    return NextResponse.json('Failed to fetch courses', { status: 500 });
+    console.error('[api/courses] Failed to fetch courses', {
+      educationId: parsedEducationId,
+      error,
+    });
+    return NextResponse.json(
+      { error: 'Failed to fetch courses' },
+      { status: 502 }
+    );
   }
 }

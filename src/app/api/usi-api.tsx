@@ -1,14 +1,46 @@
 import { unstable_cache } from 'next/cache';
+import { USI_API_BASE_URL } from '@/lib/usi-data';
+
+interface UsiCourseSchedule {
+  course: {
+    name_en: string;
+    name_it: string;
+  };
+  start: string;
+  end: string;
+  place: {
+    office: string;
+    building: {
+      campus: {
+        name: string;
+      };
+    };
+  };
+}
+
+const fetchUsiApi = async (path: string, resourceName: string) => {
+  const response = await fetch(`${USI_API_BASE_URL}${path}`, {
+    headers: { Accept: 'application/json' },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `USI API ${resourceName} request failed with status ${response.status}`
+    );
+  }
+
+  return response.json() as Promise<unknown>;
+};
 
 const fetchCourses = async (educationId: number) => {
-  const response = await fetch(
-    `https://search.usi.ch/api/educations/${educationId}/courses`
+  const result = await fetchUsiApi(
+    `/educations/${educationId}/courses`,
+    'courses'
   );
-  if (!response.ok) {
-    throw new Error('Failed to fetch courses');
+  if (typeof result !== 'object' || result === null || !('data' in result)) {
+    throw new TypeError('USI API courses response is missing data');
   }
-  const result = await response.json();
-  return result?.data;
+  return result.data;
 };
 
 export const getCachedCourses = unstable_cache(fetchCourses, ['educationId'], {
@@ -17,12 +49,7 @@ export const getCachedCourses = unstable_cache(fetchCourses, ['educationId'], {
 });
 
 const fetchEducations = async () => {
-  const response = await fetch('https://search.usi.ch/api/educations');
-  if (!response.ok) {
-    throw new Error('Failed to fetch educations');
-  }
-  const result = await response.json();
-  return result;
+  return fetchUsiApi('/educations', 'educations');
 };
 
 export const getCachedEducations = unstable_cache(fetchEducations, [], {
@@ -31,14 +58,19 @@ export const getCachedEducations = unstable_cache(fetchEducations, [], {
 });
 
 const fetchCourseSchedule = async (courseId: number) => {
-  const response = await fetch(
-    `https://search.usi.ch/api/courses/${courseId}/schedules`
+  const result = await fetchUsiApi(
+    `/courses/${courseId}/schedules`,
+    'course schedule'
   );
-  if (!response.ok) {
-    throw new Error('Failed to fetch course schedule');
+  if (
+    typeof result !== 'object' ||
+    result === null ||
+    !('data' in result) ||
+    !Array.isArray(result.data)
+  ) {
+    throw new TypeError('USI API course schedule response is missing data');
   }
-  const result = await response.json();
-  return result?.data;
+  return result.data as UsiCourseSchedule[];
 };
 
 export const getCachedCourseSchedule = unstable_cache(
