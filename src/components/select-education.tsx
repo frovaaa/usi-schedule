@@ -38,9 +38,13 @@ export default function SelectEducation() {
     setSelectedEducation,
   } = useAppContext();
   const [selectedEduType, setSelectedEduType] = useState<number>(-1);
-  const [filteredEducations, setFilteredEducations] = useState<
-    Education[] | null
-  >(educations);
+
+  const filteredEducations =
+    selectedEduType === -1
+      ? educations
+      : educations?.filter(
+          (education: Education) => education.type.id === selectedEduType
+        ) || null;
 
   const educationTypes = educations
     ?.filter(
@@ -50,6 +54,7 @@ export default function SelectEducation() {
     .map((education: Education) => education.type);
 
   const _setSelectedEduType = (type: string) => {
+    setSelectedEducation(-1);
     if (type === 'All') {
       setSelectedEduType(-1);
     } else {
@@ -63,25 +68,6 @@ export default function SelectEducation() {
     fetchEducations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    setFilteredEducations(educations);
-  }, [educations]);
-
-  useEffect(() => {
-    setSelectedEducation(-1);
-    if (selectedEduType !== -1) {
-      setFilteredEducations(
-        educations
-          ? educations.filter(
-              (education: Education) => education.type.id === selectedEduType
-            )
-          : null
-      );
-    } else {
-      setFilteredEducations(educations);
-    }
-  }, [selectedEduType, educations, setSelectedEducation]);
 
   return (
     <div className='columns-2'>
