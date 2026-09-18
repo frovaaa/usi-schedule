@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedCourseSchedule } from '../usi-api';
+import { getVtimezoneComponent } from '@touch4it/ical-timezones';
 import ical, { ICalEventData } from 'ical-generator';
 
 export async function GET(req: NextRequest) {
@@ -10,6 +11,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json('Missing courses', { status: 400 });
   }
   const calendar = ical({ name: 'USI Courses Schedule' });
+  calendar.timezone({
+    name: 'Europe/Zurich',
+    generator: getVtimezoneComponent,
+  });
 
   const courseIds = coursesParam
     .split(',')
@@ -24,6 +29,7 @@ export async function GET(req: NextRequest) {
             summary: schedule.course.name_en || schedule.course.name_it,
             start: new Date(schedule.start),
             end: new Date(schedule.end),
+            timezone: 'Europe/Zurich',
             location: {
               title: schedule.place.office,
               address: schedule.place.building.campus.name,
